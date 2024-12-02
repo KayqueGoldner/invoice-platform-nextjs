@@ -1,4 +1,7 @@
-import { Button } from "@/components/ui/button";
+import { redirect } from "next/navigation";
+
+import { SubmitButton } from "@/app/components/submit-buttons";
+import { auth, signIn } from "@/app/utils/auth";
 import {
   Card,
   CardContent,
@@ -9,7 +12,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const LoginPage = () => {
+const LoginPage = async () => {
+  const session = await auth();
+
+  if (session?.user) {
+    redirect("/dashboard");
+  }
+
   return (
     <>
       <div className="flex h-screen w-full items-center justify-center px-4">
@@ -21,12 +30,23 @@ const LoginPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form className="flex flex-col gap-y-4">
+            <form
+              action={async (formData) => {
+                "use server";
+                await signIn("nodemailer", formData);
+              }}
+              className="flex flex-col gap-y-4"
+            >
               <div className="flex flex-col gap-y-2">
                 <Label>Email</Label>
-                <Input placeholder="example@mail.com" />
+                <Input
+                  name="email"
+                  type="email"
+                  placeholder="example@mail.com"
+                  required={true}
+                />
               </div>
-              <Button>Submit</Button>
+              <SubmitButton />
             </form>
           </CardContent>
         </Card>
