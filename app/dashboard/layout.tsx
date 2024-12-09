@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 import { MenuIcon, User2Icon } from "lucide-react";
 
 import Logo from "@/public/logo.png";
@@ -17,9 +18,28 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { signOut } from "@/app/utils/auth";
+import prisma from "@/app/utils/db";
+
+async function getUser(userId: string) {
+  const data = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      firstName: true,
+      lastName: true,
+      address: true,
+    },
+  });
+
+  if (!data?.firstName || !data.lastName || !data.address) {
+    redirect("/onboarding");
+  }
+}
 
 const DashboardLayout = async ({ children }: { children: ReactNode }) => {
   const session = await requireUser();
+  const data = await getUser(session.user?.id as string);
 
   return (
     <>
@@ -55,41 +75,37 @@ const DashboardLayout = async ({ children }: { children: ReactNode }) => {
                 </nav>
               </SheetContent>
             </Sheet>
-            <div className="flex items-center ml-auto">
+            <div className="ml-auto flex items-center">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button className="rounded-full" variant="outline" size="icon">
+                  <Button
+                    className="rounded-full"
+                    variant="outline"
+                    size="icon"
+                  >
                     <User2Icon />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>
-                    My account
-                  </DropdownMenuLabel>
+                  <DropdownMenuLabel>My account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard">
-                      Dashboard
-                    </Link>
+                    <Link href="/dashboard">Dashboard</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard/invoices">
-                      Invoices
-                    </Link>
+                    <Link href="/dashboard/invoices">Invoices</Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <form 
-                      className="w-full" 
+                    <form
+                      className="w-full"
                       action={async () => {
                         "use server";
 
                         await signOut();
                       }}
                     >
-                      <button className="w-full text-left">
-                        Log out
-                      </button>
+                      <button className="w-full text-left">Log out</button>
                     </form>
                   </DropdownMenuItem>
                 </DropdownMenuContent>

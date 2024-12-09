@@ -5,7 +5,11 @@ import { Loader2Icon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
-export const SubmitButton = () => {
+interface SubmitButtonProps {
+  text: string;
+}
+
+export const SubmitButton = ({ text }: SubmitButtonProps) => {
   const { pending } = useFormStatus();
 
   return (
@@ -17,7 +21,7 @@ export const SubmitButton = () => {
         </Button>
       ) : (
         <Button type="submit" className="w-full">
-          Submit
+          {text}
         </Button>
       )}
     </>

@@ -46,7 +46,7 @@ const LoginPage = async () => {
                   required={true}
                 />
               </div>
-              <SubmitButton />
+              <SubmitButton text="Login" />
             </form>
           </CardContent>
         </Card>
