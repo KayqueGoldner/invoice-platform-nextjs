@@ -74,7 +74,7 @@ export async function createInvoice(prevState: any, formData: FormData) {
         amount: submission.value.total,
         currency: submission.value.currency,
       }),
-      invoiceLink: "Test_InvoiceLink",
+      invoiceLink: `http://localhost:3000/api/invoice/${data.id}`,
     },
   });
 

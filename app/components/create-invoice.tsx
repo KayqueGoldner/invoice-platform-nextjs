@@ -29,7 +29,19 @@ import { createInvoice } from "@/app/actions";
 import { invoiceSchema } from "@/app/utils/zodSchemas";
 import { formatCurrency } from "@/app/utils/formatCurrency";
 
-export const CreateInvoice = () => {
+interface CreateInvoiceProps {
+  firstName: string;
+  lastName: string;
+  address: string;
+  email: string;
+}
+
+export const CreateInvoice = ({
+  address,
+  email,
+  firstName,
+  lastName,
+}: CreateInvoiceProps) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [lastResult, action] = useActionState(createInvoice, undefined);
   const [rate, setRate] = useState("");
@@ -42,6 +54,11 @@ export const CreateInvoice = () => {
     },
     shouldValidate: "onBlur",
     shouldRevalidate: "onInput",
+    defaultValue: {
+      fromName: `${firstName} ${lastName}`,
+      fromAddress: address,
+      fromEmail: email,
+    },
   });
 
   const calculateTotal = (Number(quantity) || 0) * (Number(rate) || 0);
@@ -124,12 +141,14 @@ export const CreateInvoice = () => {
                   name={fields.fromName.name}
                   key={fields.fromName.key}
                   placeholder="Your Name"
+                  defaultValue={fields.fromName.initialValue}
                 />
                 <p className="text-sm text-red-500">{fields.fromName.errors}</p>
                 <Input
                   name={fields.fromEmail.name}
                   key={fields.fromEmail.key}
                   placeholder="Your E-mail"
+                  defaultValue={fields.fromEmail.initialValue}
                 />
                 <p className="text-sm text-red-500">
                   {fields.fromEmail.errors}
@@ -138,6 +157,7 @@ export const CreateInvoice = () => {
                   name={fields.fromAddress.name}
                   key={fields.fromAddress.key}
                   placeholder="Your Address"
+                  defaultValue={fields.fromAddress.initialValue}
                 />
                 <p className="text-sm text-red-500">
                   {fields.fromAddress.errors}
