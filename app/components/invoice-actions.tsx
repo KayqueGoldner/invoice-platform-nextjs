@@ -16,7 +16,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export const InvoiceActions = () => {
+interface InvoiceActionsProps {
+  id: string;
+}
+
+export const InvoiceActions = ({ id }: InvoiceActionsProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -26,13 +30,13 @@ export const InvoiceActions = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem asChild>
-          <Link href="">
+          <Link href={`/dashboard/invoices/${id}`}>
             <PencilIcon className="mr-2 size-4" />
             Edit Invoice
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="">
+          <Link href={`/api/invoice/${id}`} target="_blank">
             <DownloadCloudIcon className="mr-2 size-4" />
             Download Invoice
           </Link>

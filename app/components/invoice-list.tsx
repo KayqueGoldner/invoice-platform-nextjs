@@ -66,7 +66,7 @@ export const InvoiceList = async () => {
               )}
             </TableCell>
             <TableCell className="text-right">
-              <InvoiceActions />
+              <InvoiceActions id={invoice.id} />
             </TableCell>
           </TableRow>
         ))}

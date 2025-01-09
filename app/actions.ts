@@ -80,3 +80,54 @@ export async function createInvoice(prevState: any, formData: FormData) {
 
   return redirect("/dashboard/invoices");
 }
+
+export async function editInvoice(prevState: any, formData: FormData) {
+  const session = await requireUser();
+
+  const submission = parseWithZod(formData, {
+    schema: invoiceSchema,
+  });
+
+  if (submission.status !== "success") {
+    return submission.reply();
+  }
+
+  const data = await prisma.invoice.update({
+    where: {
+      id: formData.get("id") as string,
+      userId: session.user?.id,
+    },
+    data: {
+      ...submission.value,
+    },
+  });
+
+  const sender = {
+    email: "hello@demomailtrap.com",
+    name: "Invoice Platform",
+  };
+
+  emailClient.send({
+    from: sender,
+    to: [
+      {
+        email: process.env.MAILTRAP_DEMO_EMAIL!, // change to client email "submission.value.clientEmail"
+      },
+    ],
+    template_uuid: process.env.MAILTRAP_EDIT_TEMPLATE_UUID!,
+    template_variables: {
+      clientName: submission.value.clientName,
+      invoiceNumber: submission.value.invoiceNumber,
+      dueDate: new Intl.DateTimeFormat("en-US", { dateStyle: "long" }).format(
+        new Date(submission.value.date),
+      ),
+      totalAmount: formatCurrency({
+        amount: submission.value.total,
+        currency: submission.value.currency,
+      }),
+      invoiceLink: `http://localhost:3000/api/invoice/${data.id}`,
+    },
+  });
+
+  return redirect("/dashboard/invoices");
+}
