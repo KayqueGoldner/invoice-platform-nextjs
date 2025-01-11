@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   CheckCircleIcon,
@@ -7,6 +9,7 @@ import {
   PencilIcon,
   TrashIcon,
 } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +24,22 @@ interface InvoiceActionsProps {
 }
 
 export const InvoiceActions = ({ id }: InvoiceActionsProps) => {
+  const handleReminderEmail = () => {
+    toast.promise(
+      fetch(`/api/email/${id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      {
+        loading: "Sendind reminder email...",
+        success: "Reminder email sent successfully",
+        error: "Failed to send reminder email",
+      },
+    );
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -41,11 +60,9 @@ export const InvoiceActions = ({ id }: InvoiceActionsProps) => {
             Download Invoice
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href="">
-            <MailIcon className="mr-2 size-4" />
-            Reminder Email
-          </Link>
+        <DropdownMenuItem onClick={handleReminderEmail}>
+          <MailIcon className="mr-2 size-4" />
+          Reminder Email
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="">
